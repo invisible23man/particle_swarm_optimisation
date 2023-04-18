@@ -1,7 +1,7 @@
 import numpy as np 
 import copy
 import numpy.random as rnd
-import ParticleSwarmUtility as PSU
+import particleSwarmUtility as PSU
  
  
  
