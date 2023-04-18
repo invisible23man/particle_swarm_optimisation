@@ -87,3 +87,6 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+run: run ## run main file
+	python particle_swarm_optimisation/particle_swarm_optimisation.py
