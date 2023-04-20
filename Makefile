@@ -93,3 +93,6 @@ run: run ## run main file
 
 runPSO: ## run pso main file
 	python particle_swarm_optimisation/pso.py
+
+cleanUp: ## remove obsolete results, logs, figures
+	python particle_swarm_optimisation/tools/houseKeeping.py
