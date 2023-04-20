@@ -1,5 +1,7 @@
 #%%
 from costFunctions.sphere import Sphere
+from tools.plots import makePlot
+
 import numpy as np
 import logging
 import datetime
@@ -7,9 +9,13 @@ import os
 
 os.chdir('/Users/invisible_man/Documents/DTU/Courses/Drones/ProgrammingResources/particle_swarm_optimisation')
 logDir = './logs'
-filename = datetime.datetime.now().strftime("pso_%Y-%m-%d_%H-%M-%S.log")
+figDir = './figures'
+runName = datetime.datetime.now().strftime("pso_%Y-%m-%d_%H-%M-%S")
 
-logging.basicConfig(filename=os.path.join(logDir,filename), level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(filename=os.path.join(logDir, ".".join([runName,"log"])), 
+                    level=logging.DEBUG, 
+                    format='%(asctime)s %(levelname)s: %(message)s', 
+                    datefmt='%Y-%m-%d %H:%M:%S')
 #%% Problem Definition
 
 costFunction = Sphere           # Cost Function in Use
@@ -20,9 +26,10 @@ varMax = 10                     # Upper Bound of Decision Variables
 
 #%% Parameters of PSO
 
-maxIt = 100                     # Maximum Number of Iterations
+maxIt = 1000                    # Maximum Number of Iterations
 nPop = 50                       # Population Size (Swarm Size)
 w = 1                           # Inertia Coefficient
+wDamp = 0.99                    # Damping Ratio of Inertia Coefficient
 c1 = 2                          # Personal Acceleration Coefficient
 c2 = 2                          # Social Acceleration Coefficient
 #%% Initialisation
@@ -108,9 +115,17 @@ for it in range(maxIt):
                 "Position" : particle[i]["Best"]["Position"].copy()
             }   
 
+    # Damping Inertia Coefficient
+    w = w* wDamp
+
     # Store the Best Cost Value
     bestCosts[it] = globalBest["Cost"]
     logging.info("Iteration {0}: Best Cost = {1}".format(it, bestCosts[it])) 
 
+logging.info("Global Best Cost = {0}".format(globalBest)) 
+
 #%% Results
+
+makePlot(bestCosts, runName, figDir)
+
 
