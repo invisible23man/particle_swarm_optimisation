@@ -24,12 +24,30 @@ class PSO:
 
     ## Parameters of PSO
     def setParameters(self):
-        self.maxIt = self.params.maxIt       # Maximum Number of Iterations
-        self.nPop = self.params.nPop         # Population Size (Swarm Size)
-        self.w = self.params.w               # Inertia Coefficient
-        self.wDamp = self.params.wDamp       # Damping Ratio of Inertia Coefficient
-        self.c1 = self.params.c1             # Personal Acceleration Coefficient
-        self.c2 = self.params.c2             # Social Acceleration Coefficient
+        self.maxIt = self.params.maxIt                  # Maximum Number of Iterations
+        self.nPop = self.params.nPop                    # Population Size (Swarm Size)
+        self.w = self.params.w                          # Inertia Coefficient
+        self.wDamp = self.params.wDamp                  # Damping Ratio of Inertia Coefficient
+        self.c1 = self.params.c1                        # Personal Acceleration Coefficient
+        self.c2 = self.params.c2                        # Social Acceleration Coefficient
+        self.showIterInfo = self.params.showIterInfo    # Flag for Showing Iteration Information
+
+        self.maxVelocity = 0.2*(self.varMax-self.varMin)
+        self.minVelocity = -self.maxVelocity
+
+        # Apply Constriction Coefficients
+        if (self.params.constrictionCoefficients.enabled):
+            self.phi = self.params.constrictionCoefficients.phi1 + self.params.constrictionCoefficients.phi2
+            self.chi = 2*self.params.constrictionCoefficients.kappa/abs(2-self.phi-np.sqrt(self.phi**2-4*self.phi))
+
+            self.w = self.params.w                          # Inertia Coefficient
+            self.wDamp = self.params.wDamp                  # Damping Ratio of Inertia Coefficient
+            self.c1 = self.params.c1                        # Personal Acceleration Coefficient
+            self.c2 = self.params.c2                        # Social Acceleration Coefficient
+
+            logging.info("Applied Constriction Coefficents")
+                
+
 
     ## Initialisation
     def initialize(self):
@@ -93,8 +111,20 @@ class PSO:
                     + self.c1*(np.random.random(self.varSize)*(self.particle[i]["Best"]["Position"]-self.particle[i]["Position"])) \
                     + self.c2*(np.random.random(self.varSize)*(self.globalBest["Position"]-self.particle[i]["Position"]))
 
+                # # Apply Velocity Limits
+                # self.particle[i]["Velocity"] = np.maximum(self.particle[i]["Velocity"], 
+                #                                           np.array([self.maxVelocity for i in range(self.particle[i]["Velocity"].shape[0])]))
+                # self.particle[i]["Velocity"] = np.minimum(self.particle[i]["Velocity"],
+                #                                           np.array([self.minVelocity for i in range(self.particle[i]["Velocity"].shape[0])]))
+
                 # Update Position
                 self.particle[i]["Position"] = self.particle[i]["Position"] + self.particle[i]["Velocity"]
+
+                # # Apply Lower and Upper Bound Limits
+                # self.particle[i]["Position"] = np.maximum(self.particle[i]["Position"], 
+                #                                           np.array([self.varMin for i in range(self.particle[i]["Position"].shape[0])]))
+                # self.particle[i]["Position"] = np.minimum(self.particle[i]["Position"],
+                #                                           np.array([self.varMin for i in range(self.particle[i]["Position"].shape[0])]))
 
                 # Evaluation
                 self.particle[i]["Cost"] = self.costFunction(self.particle[i]["Position"])
@@ -118,6 +148,7 @@ class PSO:
 
             # Store the Best Cost Value
             self.bestCosts[it] = self.globalBest["Cost"]
-            logging.info("Iteration {0}: Best Cost = {1}".format(it, self.bestCosts[it])) 
+            if (self.showIterInfo):
+                logging.info("Iteration {0}: Best Cost = {1}".format(it, self.bestCosts[it])) 
 
         return self.bestCosts
