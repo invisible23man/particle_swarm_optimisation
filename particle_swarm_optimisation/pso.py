@@ -1,5 +1,5 @@
 
-from costFunctions.sphere import Sphere
+from utils import costFunctions
 import numpy as np
 import logging
 
@@ -14,20 +14,22 @@ class PSO:
 
     ## Problem Definition
     def defineProblem(self):
-        self.costFunction = Sphere           # Cost Function in Use
-        self.nVar = 5                        # Decision Variables 
-        self.varSize = (1, self.nVar)        # Matrix Size of Decision Variables
-        self.varMin = -10                    # Lower Bound of Decision Variables
-        self.varMax = 10                     # Upper Bound of Decision Variables
+        
+        self.costFunction = \
+            getattr(costFunctions, self.problem.costFunction)   # Cost Function in Use
+        self.nVar = self.problem.nVar                           # Decision Variables 
+        self.varSize = (1, self.nVar)                           # Matrix Size of Decision Variables
+        self.varMin = self.problem.varMin                       # Lower Bound of Decision Variables
+        self.varMax = self.problem.varMax                       # Upper Bound of Decision Variables
 
     ## Parameters of PSO
     def setParameters(self):
-        self.maxIt = 1000                    # Maximum Number of Iterations
-        self.nPop = 50                       # Population Size (Swarm Size)
-        self.w = 1                           # Inertia Coefficient
-        self.wDamp = 0.99                    # Damping Ratio of Inertia Coefficient
-        self.c1 = 2                          # Personal Acceleration Coefficient
-        self.c2 = 2                          # Social Acceleration Coefficient
+        self.maxIt = self.params.maxIt       # Maximum Number of Iterations
+        self.nPop = self.params.nPop         # Population Size (Swarm Size)
+        self.w = self.params.w               # Inertia Coefficient
+        self.wDamp = self.params.wDamp       # Damping Ratio of Inertia Coefficient
+        self.c1 = self.params.c1             # Personal Acceleration Coefficient
+        self.c2 = self.params.c2             # Social Acceleration Coefficient
 
     ## Initialisation
     def initialize(self):
