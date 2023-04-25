@@ -107,3 +107,6 @@ ENV/
 
 # matplotlib
 *.png
+
+# Hydra
+outputs/

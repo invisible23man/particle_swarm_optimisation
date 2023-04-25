@@ -4,11 +4,9 @@ import numpy as np
 import logging
 
 class PSO:
-    def __init__(self):
-
-    # def __init__(self, problem, params):
-    #     self.problem = problem
-    #     self.params = params
+    def __init__(self, problem, params):
+        self.problem = problem
+        self.params = params
         
         self.defineProblem()
         self.setParameters()
