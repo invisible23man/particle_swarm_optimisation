@@ -1,131 +1,123 @@
-#%%
-from costFunctions.sphere import Sphere
-from tools.plots import makePlot
 
+from costFunctions.sphere import Sphere
 import numpy as np
 import logging
-import datetime
-import os
 
-os.chdir('/Users/invisible_man/Documents/DTU/Courses/Drones/ProgrammingResources/particle_swarm_optimisation')
-logDir = './logs'
-figDir = './figures'
-runName = datetime.datetime.now().strftime("pso_%Y-%m-%d_%H-%M-%S")
+class PSO:
+    def __init__(self):
 
-logging.basicConfig(filename=os.path.join(logDir, ".".join([runName,"log"])), 
-                    level=logging.DEBUG, 
-                    format='%(asctime)s %(levelname)s: %(message)s', 
-                    datefmt='%Y-%m-%d %H:%M:%S')
-#%% Problem Definition
+    # def __init__(self, problem, params):
+    #     self.problem = problem
+    #     self.params = params
+        
+        self.defineProblem()
+        self.setParameters()
+        self.initialize()
 
-costFunction = Sphere           # Cost Function in Use
-nVar = 5                        # Decision Variables 
-varSize = (1, nVar)             # Matrix Size of Decision Variables
-varMin = -10                    # Lower Bound of Decision Variables
-varMax = 10                     # Upper Bound of Decision Variables
+    ## Problem Definition
+    def defineProblem(self):
+        self.costFunction = Sphere           # Cost Function in Use
+        self.nVar = 5                        # Decision Variables 
+        self.varSize = (1, self.nVar)        # Matrix Size of Decision Variables
+        self.varMin = -10                    # Lower Bound of Decision Variables
+        self.varMax = 10                     # Upper Bound of Decision Variables
 
-#%% Parameters of PSO
+    ## Parameters of PSO
+    def setParameters(self):
+        self.maxIt = 1000                    # Maximum Number of Iterations
+        self.nPop = 50                       # Population Size (Swarm Size)
+        self.w = 1                           # Inertia Coefficient
+        self.wDamp = 0.99                    # Damping Ratio of Inertia Coefficient
+        self.c1 = 2                          # Personal Acceleration Coefficient
+        self.c2 = 2                          # Social Acceleration Coefficient
 
-maxIt = 1000                    # Maximum Number of Iterations
-nPop = 50                       # Population Size (Swarm Size)
-w = 1                           # Inertia Coefficient
-wDamp = 0.99                    # Damping Ratio of Inertia Coefficient
-c1 = 2                          # Personal Acceleration Coefficient
-c2 = 2                          # Social Acceleration Coefficient
-#%% Initialisation
-
-# The Particle Template
-emptyParticle = {
-    'Position': None,
-    'Velocity': None,
-    'Cost': None,
-    'Best': {
-        'Position': None,
-        'Cost': np.inf
-    }
-}
-
-nPop = 50  # number of particles
-
-# Create Population Array
-particle = np.array([emptyParticle.copy() for _ in range(nPop)])
-
-# Initialize Global Best
-globalBest = {
-    'Position': None,
-    'Cost': np.inf
-} 
-
-# Initialize Population Members
-for i in range(nPop):
-
-    # Generate Random Solution
-    particle[i]["Position"] = np.random.uniform(varMin, varMax, varSize)
-
-    # Initialize Velocity
-    particle[i]["Velocity"] = np.zeros(varSize)
-
-    # Evaluation 
-    particle[i]["Cost"] = costFunction(particle[i]["Position"])
-    
-    # Update the Personal Best
-    particle[i]["Best"] = {
-        "Position": particle[i]["Position"].copy(),
-        "Cost": particle[i]["Cost"].copy()
-    }
-
-    # Update the Global Best
-    if particle[i]["Best"]["Cost"] < globalBest["Cost"]:
-        globalBest = {
-            "Cost" : particle[i]["Best"]["Cost"].copy(),
-            "Position" : particle[i]["Best"]["Position"].copy()
+    ## Initialisation
+    def initialize(self):
+        # The Particle Template
+        emptyParticle = {
+            'Position': None,
+            'Velocity': None,
+            'Cost': None,
+            'Best': {
+                'Position': None,
+                'Cost': np.inf
+            }
         }
 
-# Array to Hold Best Cost Value on Each Iteration
-bestCosts = np.zeros((maxIt,1))
+        # Create Population Array
+        self.particle = np.array([emptyParticle.copy() for _ in range(self.nPop)])
 
-#%% Main Loop of PSO
+        # Initialize Global Best
+        self.globalBest = {
+            'Position': None,
+            'Cost': np.inf
+        } 
 
-for it in range(maxIt):
+        # Initialize Population Members
+        for i in range(self.nPop):
 
-    for i in range(nPop): 
-    
-        # Update Velocity
-        particle[i]["Velocity"] = w*particle[i]["Velocity"] \
-            + c1*(np.random.random(varSize)*(particle[i]["Best"]["Position"]-particle[i]["Position"])) \
-            + c2*(np.random.random(varSize)*(globalBest["Position"]-particle[i]["Position"]))
+            # Generate Random Solution
+            self.particle[i]["Position"] = np.random.uniform(self.varMin, self.varMax, self.varSize)
 
-        # Update Position
-        particle[i]["Position"] = particle[i]["Position"] + particle[i]["Velocity"]
+            # Initialize Velocity
+            self.particle[i]["Velocity"] = np.zeros(self.varSize)
 
-        # Evaluation
-        particle[i]["Cost"] = costFunction(particle[i]["Position"])
+            # Evaluation 
+            self.particle[i]["Cost"] = self.costFunction(self.particle[i]["Position"])
+            
+            # Update the Personal Best
+            self.particle[i]["Best"] = {
+                "Position": self.particle[i]["Position"].copy(),
+                "Cost": self.particle[i]["Cost"].copy()
+            }
 
-        # Update Personal Best
-        if particle[i]["Cost"] < particle[i]["Best"]["Cost"]:
-            particle[i]["Best"] = {
-                "Position": particle[i]["Position"].copy(),
-                "Cost": particle[i]["Cost"].copy()
-            }   
+            # Update the Global Best
+            if self.particle[i]["Best"]["Cost"] < self.globalBest["Cost"]:
+                self.globalBest = {
+                    "Cost" : self.particle[i]["Best"]["Cost"].copy(),
+                    "Position" : self.particle[i]["Best"]["Position"].copy()
+                }
 
-        # Update the Global Best
-        if particle[i]["Best"]["Cost"] < globalBest["Cost"]:
-            globalBest = {
-                "Cost" : particle[i]["Best"]["Cost"].copy(),
-                "Position" : particle[i]["Best"]["Position"].copy()
-            }   
+        # Array to Hold Best Cost Value on Each Iteration
+        self.bestCosts = np.zeros((self.maxIt,1))
 
-    # Damping Inertia Coefficient
-    w = w* wDamp
+    ## Main Loop of PSO
+    def runPSO(self):
 
-    # Store the Best Cost Value
-    bestCosts[it] = globalBest["Cost"]
-    logging.info("Iteration {0}: Best Cost = {1}".format(it, bestCosts[it])) 
+        for it in range(self.maxIt):
 
-logging.info("Global Best Cost = {0}".format(globalBest)) 
+            for i in range(self.nPop): 
+            
+                # Update Velocity
+                self.particle[i]["Velocity"] = self.w*self.particle[i]["Velocity"] \
+                    + self.c1*(np.random.random(self.varSize)*(self.particle[i]["Best"]["Position"]-self.particle[i]["Position"])) \
+                    + self.c2*(np.random.random(self.varSize)*(self.globalBest["Position"]-self.particle[i]["Position"]))
 
-#%% Results
+                # Update Position
+                self.particle[i]["Position"] = self.particle[i]["Position"] + self.particle[i]["Velocity"]
 
-makePlot(bestCosts, runName, figDir)
+                # Evaluation
+                self.particle[i]["Cost"] = self.costFunction(self.particle[i]["Position"])
 
+                # Update Personal Best
+                if self.particle[i]["Cost"] < self.particle[i]["Best"]["Cost"]:
+                    self.particle[i]["Best"] = {
+                        "Position": self.particle[i]["Position"].copy(),
+                        "Cost": self.particle[i]["Cost"].copy()
+                    }   
 
+                # Update the Global Best
+                if self.particle[i]["Best"]["Cost"] <self.globalBest["Cost"]:
+                    self.globalBest = {
+                        "Cost" : self.particle[i]["Best"]["Cost"].copy(),
+                        "Position" : self.particle[i]["Best"]["Position"].copy()
+                    }   
+
+            # Damping Inertia Coefficient
+            self.w = self.w * self.wDamp
+
+            # Store the Best Cost Value
+            self.bestCosts[it] = self.globalBest["Cost"]
+            logging.info("Iteration {0}: Best Cost = {1}".format(it, self.bestCosts[it])) 
+
+        return self.bestCosts
