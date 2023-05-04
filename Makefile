@@ -90,3 +90,9 @@ install: clean ## install the package to the active Python's site-packages
 
 run: run ## run main file
 	python particle_swarm_optimisation/particle_swarm_optimisation.py
+
+runPSO: ## run pso main file
+	python particle_swarm_optimisation/main.py
+
+cleanUp: ## remove obsolete results, logs, figures
+	python particle_swarm_optimisation/tools/houseKeeping.py

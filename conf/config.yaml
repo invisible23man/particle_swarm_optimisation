@@ -1,0 +1,26 @@
+#config.yaml
+problemDefinition:
+  costFunction: 'Sphere'  # Cost Function in Use
+  nVar: 10                 # Decision Variables 
+  varMin: -10             # Lower Bound of Decision Variables
+  varMax: 10              # Upper Bound of Decision Variables
+
+psoParameters:
+  maxIt : 1000                    # Maximum Number of Iterations
+  nPop : 50                       # Population Size (Swarm Size)
+  w : 1                           # Inertia Coefficient
+  wDamp : 0.99                    # Damping Ratio of Inertia Coefficient
+  c1 : 2                          # Personal Acceleration Coefficient
+  c2 : 2                          # Social Acceleration Coefficient
+  showIterInfo: false              # Flag for Showing Iteration Information
+  constrictionCoefficients:
+    enabled: true
+    kappa: 1
+    phi1: 2.05
+    phi2: 2.05
+
+pathParameters:
+  rootDir: '/Users/invisible_man/Documents/DTU/Courses/Drones/ProgrammingResources/particle_swarm_optimisation'
+  logDir: './logs'
+  figDir: './figures'
+
