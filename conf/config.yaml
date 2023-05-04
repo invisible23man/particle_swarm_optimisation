@@ -1,7 +1,7 @@
 #config.yaml
 problemDefinition:
   costFunction: 'Sphere'  # Cost Function in Use
-  nVar: 5                 # Decision Variables 
+  nVar: 10                 # Decision Variables 
   varMin: -10             # Lower Bound of Decision Variables
   varMax: 10              # Upper Bound of Decision Variables
 

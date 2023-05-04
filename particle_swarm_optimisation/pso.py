@@ -113,18 +113,18 @@ class PSO:
 
                 # # Apply Velocity Limits
                 # self.particle[i]["Velocity"] = np.maximum(self.particle[i]["Velocity"], 
-                #                                           np.array([self.maxVelocity for i in range(self.particle[i]["Velocity"].shape[0])]))
+                #                                           np.array([self.maxVelocity for i in range(self.particle[i]["Velocity"].shape[1])]))
                 # self.particle[i]["Velocity"] = np.minimum(self.particle[i]["Velocity"],
-                #                                           np.array([self.minVelocity for i in range(self.particle[i]["Velocity"].shape[0])]))
+                #                                           np.array([self.minVelocity for i in range(self.particle[i]["Velocity"].shape[1])]))
 
                 # Update Position
                 self.particle[i]["Position"] = self.particle[i]["Position"] + self.particle[i]["Velocity"]
 
                 # # Apply Lower and Upper Bound Limits
                 # self.particle[i]["Position"] = np.maximum(self.particle[i]["Position"], 
-                #                                           np.array([self.varMin for i in range(self.particle[i]["Position"].shape[0])]))
+                #                                           np.array([self.varMin for i in range(self.particle[i]["Position"].shape[1])]))
                 # self.particle[i]["Position"] = np.minimum(self.particle[i]["Position"],
-                #                                           np.array([self.varMin for i in range(self.particle[i]["Position"].shape[0])]))
+                #                                           np.array([self.varMin for i in range(self.particle[i]["Position"].shape[1])]))
 
                 # Evaluation
                 self.particle[i]["Cost"] = self.costFunction(self.particle[i]["Position"])
